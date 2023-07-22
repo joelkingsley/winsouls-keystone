@@ -9,6 +9,8 @@
   },
   "include": [
     "/**/*",
-    "src/**/*"
+    "src/**/*",
+    "src/auth/**/*",
+    "src/module/**/*"
   ],
 }
