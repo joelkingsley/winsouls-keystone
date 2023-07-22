@@ -1,6 +1,6 @@
-# Keystone Project Starter
+# WinSouls Admin UI
 
-Welcome to Keystone!
+Welcome to WinSouls Admin UI powered by Keystone!
 
 Run
 
