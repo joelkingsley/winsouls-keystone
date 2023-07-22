@@ -1,0 +1,31 @@
+import { randomBytes } from 'crypto';
+import { createAuth } from '@keystone-6/auth';
+
+import { statelessSessions } from '@keystone-6/core/session';
+
+let sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret && process.env.NODE_ENV !== 'production') {
+  sessionSecret = randomBytes(32).toString('hex');
+}
+
+const { withAuth } = createAuth({
+  listKey: 'User',
+  identityField: 'email',
+  sessionData: 'name createdAt adminMemberships { id name }',
+  secretField: 'adminUiPassword',
+
+  // WARNING: remove initFirstItem functionality in production
+  //   see https://keystonejs.com/docs/config/auth#init-first-item for more
+  // initFirstItem: {
+  //   fields: ['name', 'email', 'adminUiPassword'],
+  // },
+});
+
+const sessionMaxAge = 60 * 60 * 24 * 30;
+
+const session = statelessSessions({
+  maxAge: sessionMaxAge,
+  secret: sessionSecret!,
+});
+
+export { withAuth, session };
