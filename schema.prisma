@@ -12,25 +12,121 @@ generator client {
 }
 
 model User {
-  id               String         @id @default(cuid())
-  name             String         @default("")
-  email            String         @unique @default("")
-  adminUiPassword  String
-  memberships      Organization[] @relation("Organization_membersInOrganization")
-  adminMemberships Organization[] @relation("Organization_adminsOfOrganization")
-  createdAt        DateTime?      @default(now())
+  id                                   String                    @id @default(cuid())
+  name                                 String                    @default("")
+  email                                String                    @unique @default("")
+  adminUiPassword                      String
+  memberships                          Organization[]            @relation("Organization_membersInOrganization")
+  adminMemberships                     Organization[]            @relation("Organization_adminsOfOrganization")
+  createdAt                            DateTime?                 @default(now())
+  from_SoulWinningSessionGroup_members SoulWinningSessionGroup[] @relation("SoulWinningSessionGroup_members")
 }
 
 model Organization {
-  id                    String             @id @default(cuid())
-  name                  String             @default("")
-  membersInOrganization User[]             @relation("Organization_membersInOrganization")
-  adminsOfOrganization  User[]             @relation("Organization_adminsOfOrganization")
-  type                  OrganizationType[] @relation("Organization_type")
+  id                    String               @id @default(cuid())
+  name                  String               @default("")
+  membersInOrganization User[]               @relation("Organization_membersInOrganization")
+  adminsOfOrganization  User[]               @relation("Organization_adminsOfOrganization")
+  type                  OrganizationTypeType @default(church)
+  eventsByOrganization  Event[]              @relation("Event_organization")
+  mapsInOrganization    Map[]                @relation("Map_belongingOrganization")
 }
 
-model OrganizationType {
-  id                     String         @id @default(cuid())
-  name                   String         @unique @default("")
-  from_Organization_type Organization[] @relation("Organization_type")
+model Event {
+  id                      String               @id @default(cuid())
+  name                    String               @default("")
+  type                    EventTypeType        @default(marathon)
+  organization            Organization?        @relation("Event_organization", fields: [organizationId], references: [id])
+  organizationId          String?              @map("organization")
+  soulWinningSessions     SoulWinningSession[] @relation("SoulWinningSession_event")
+  scheduledStartTimeInUtc DateTime
+  scheduledEndTimeInUtc   DateTime
+
+  @@index([organizationId])
+}
+
+model SoulWinningSession {
+  id                      String                    @id @default(cuid())
+  name                    String                    @default("")
+  event                   Event?                    @relation("SoulWinningSession_event", fields: [eventId], references: [id])
+  eventId                 String?                   @map("event")
+  groups                  SoulWinningSessionGroup[] @relation("SoulWinningSessionGroup_session")
+  scheduledStartTimeInUtc DateTime
+  scheduledEndTimeInUtc   DateTime
+
+  @@index([eventId])
+}
+
+model SoulWinningSessionGroup {
+  id                String              @id @default(cuid())
+  session           SoulWinningSession? @relation("SoulWinningSessionGroup_session", fields: [sessionId], references: [id])
+  sessionId         String?             @map("session")
+  members           User[]              @relation("SoulWinningSessionGroup_members")
+  assignedMapArea   MapArea?            @relation("SoulWinningSessionGroup_assignedMapArea", fields: [assignedMapAreaId], references: [id])
+  assignedMapAreaId String?             @map("assignedMapArea")
+  encounters        Encounter[]         @relation("Encounter_group")
+
+  @@index([sessionId])
+  @@index([assignedMapAreaId])
+}
+
+model Encounter {
+  id                 String                   @id @default(cuid())
+  group              SoulWinningSessionGroup? @relation("Encounter_group", fields: [groupId], references: [id])
+  groupId            String?                  @map("group")
+  houseAddress       String                   @default("")
+  encounterTimeInUtc DateTime?
+  salvations         SavedPerson[]            @relation("SavedPerson_savingEncounter")
+  result             EncounterResultType      @default(not_interested)
+
+  @@index([groupId])
+}
+
+model SavedPerson {
+  id                String     @id @default(cuid())
+  name              String     @default("")
+  email             String     @unique @default("")
+  phone             String     @default("")
+  savingEncounter   Encounter? @relation("SavedPerson_savingEncounter", fields: [savingEncounterId], references: [id])
+  savingEncounterId String?    @map("savingEncounter")
+
+  @@index([savingEncounterId])
+}
+
+model Map {
+  id                      String        @id @default(cuid())
+  name                    String        @default("")
+  belongingOrganization   Organization? @relation("Map_belongingOrganization", fields: [belongingOrganizationId], references: [id])
+  belongingOrganizationId String?       @map("belongingOrganization")
+  areas                   MapArea[]     @relation("MapArea_belongingMap")
+
+  @@index([belongingOrganizationId])
+}
+
+model MapArea {
+  id                                           String                    @id @default(cuid())
+  name                                         String                    @default("")
+  belongingMap                                 Map?                      @relation("MapArea_belongingMap", fields: [belongingMapId], references: [id])
+  belongingMapId                               String?                   @map("belongingMap")
+  polygonGeoJson                               Json?
+  from_SoulWinningSessionGroup_assignedMapArea SoulWinningSessionGroup[] @relation("SoulWinningSessionGroup_assignedMapArea")
+
+  @@index([belongingMapId])
+}
+
+enum OrganizationTypeType {
+  church
+  soul_winning_club
+}
+
+enum EventTypeType {
+  marathon
+  push
+}
+
+enum EncounterResultType {
+  salvation
+  listened_to_entire_gospel
+  listened_to_few_verses
+  not_interested
 }

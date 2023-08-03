@@ -152,8 +152,16 @@ type Organization {
   membersInOrganizationCount(where: UserWhereInput! = {}): Int
   adminsOfOrganization(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   adminsOfOrganizationCount(where: UserWhereInput! = {}): Int
-  type(where: OrganizationTypeWhereInput! = {}, orderBy: [OrganizationTypeOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrganizationTypeWhereUniqueInput): [OrganizationType!]
-  typeCount(where: OrganizationTypeWhereInput! = {}): Int
+  type: OrganizationTypeType
+  eventsByOrganization(where: EventWhereInput! = {}, orderBy: [EventOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventWhereUniqueInput): [Event!]
+  eventsByOrganizationCount(where: EventWhereInput! = {}): Int
+  mapsInOrganization(where: MapWhereInput! = {}, orderBy: [MapOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MapWhereUniqueInput): [Map!]
+  mapsInOrganizationCount(where: MapWhereInput! = {}): Int
+}
+
+enum OrganizationTypeType {
+  church
+  soul_winning_club
 }
 
 input OrganizationWhereUniqueInput {
@@ -168,7 +176,9 @@ input OrganizationWhereInput {
   name: StringFilter
   membersInOrganization: UserManyRelationFilter
   adminsOfOrganization: UserManyRelationFilter
-  type: OrganizationTypeManyRelationFilter
+  type: OrganizationTypeTypeNullableFilter
+  eventsByOrganization: EventManyRelationFilter
+  mapsInOrganization: MapManyRelationFilter
 }
 
 input UserManyRelationFilter {
@@ -177,22 +187,38 @@ input UserManyRelationFilter {
   none: UserWhereInput
 }
 
-input OrganizationTypeManyRelationFilter {
-  every: OrganizationTypeWhereInput
-  some: OrganizationTypeWhereInput
-  none: OrganizationTypeWhereInput
+input OrganizationTypeTypeNullableFilter {
+  equals: OrganizationTypeType
+  in: [OrganizationTypeType!]
+  notIn: [OrganizationTypeType!]
+  not: OrganizationTypeTypeNullableFilter
+}
+
+input EventManyRelationFilter {
+  every: EventWhereInput
+  some: EventWhereInput
+  none: EventWhereInput
+}
+
+input MapManyRelationFilter {
+  every: MapWhereInput
+  some: MapWhereInput
+  none: MapWhereInput
 }
 
 input OrganizationOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  type: OrderDirection
 }
 
 input OrganizationUpdateInput {
   name: String
   membersInOrganization: UserRelateToManyForUpdateInput
   adminsOfOrganization: UserRelateToManyForUpdateInput
-  type: OrganizationTypeRelateToManyForUpdateInput
+  type: OrganizationTypeType
+  eventsByOrganization: EventRelateToManyForUpdateInput
+  mapsInOrganization: MapRelateToManyForUpdateInput
 }
 
 input UserRelateToManyForUpdateInput {
@@ -202,11 +228,18 @@ input UserRelateToManyForUpdateInput {
   connect: [UserWhereUniqueInput!]
 }
 
-input OrganizationTypeRelateToManyForUpdateInput {
-  disconnect: [OrganizationTypeWhereUniqueInput!]
-  set: [OrganizationTypeWhereUniqueInput!]
-  create: [OrganizationTypeCreateInput!]
-  connect: [OrganizationTypeWhereUniqueInput!]
+input EventRelateToManyForUpdateInput {
+  disconnect: [EventWhereUniqueInput!]
+  set: [EventWhereUniqueInput!]
+  create: [EventCreateInput!]
+  connect: [EventWhereUniqueInput!]
+}
+
+input MapRelateToManyForUpdateInput {
+  disconnect: [MapWhereUniqueInput!]
+  set: [MapWhereUniqueInput!]
+  create: [MapCreateInput!]
+  connect: [MapWhereUniqueInput!]
 }
 
 input OrganizationUpdateArgs {
@@ -218,7 +251,9 @@ input OrganizationCreateInput {
   name: String
   membersInOrganization: UserRelateToManyForCreateInput
   adminsOfOrganization: UserRelateToManyForCreateInput
-  type: OrganizationTypeRelateToManyForCreateInput
+  type: OrganizationTypeType
+  eventsByOrganization: EventRelateToManyForCreateInput
+  mapsInOrganization: MapRelateToManyForCreateInput
 }
 
 input UserRelateToManyForCreateInput {
@@ -226,45 +261,569 @@ input UserRelateToManyForCreateInput {
   connect: [UserWhereUniqueInput!]
 }
 
-input OrganizationTypeRelateToManyForCreateInput {
-  create: [OrganizationTypeCreateInput!]
-  connect: [OrganizationTypeWhereUniqueInput!]
+input EventRelateToManyForCreateInput {
+  create: [EventCreateInput!]
+  connect: [EventWhereUniqueInput!]
 }
 
-type OrganizationType {
+input MapRelateToManyForCreateInput {
+  create: [MapCreateInput!]
+  connect: [MapWhereUniqueInput!]
+}
+
+type Event {
   id: ID!
   name: String
+  type: EventTypeType
+  organization: Organization
+  soulWinningSessions(where: SoulWinningSessionWhereInput! = {}, orderBy: [SoulWinningSessionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SoulWinningSessionWhereUniqueInput): [SoulWinningSession!]
+  soulWinningSessionsCount(where: SoulWinningSessionWhereInput! = {}): Int
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
 }
 
-input OrganizationTypeWhereUniqueInput {
+enum EventTypeType {
+  marathon
+  push
+}
+
+input EventWhereUniqueInput {
   id: ID
-  name: String
 }
 
-input OrganizationTypeWhereInput {
-  AND: [OrganizationTypeWhereInput!]
-  OR: [OrganizationTypeWhereInput!]
-  NOT: [OrganizationTypeWhereInput!]
+input EventWhereInput {
+  AND: [EventWhereInput!]
+  OR: [EventWhereInput!]
+  NOT: [EventWhereInput!]
   id: IDFilter
   name: StringFilter
+  type: EventTypeTypeNullableFilter
+  organization: OrganizationWhereInput
+  soulWinningSessions: SoulWinningSessionManyRelationFilter
+  scheduledStartTimeInUtc: DateTimeFilter
+  scheduledEndTimeInUtc: DateTimeFilter
 }
 
-input OrganizationTypeOrderByInput {
+input EventTypeTypeNullableFilter {
+  equals: EventTypeType
+  in: [EventTypeType!]
+  notIn: [EventTypeType!]
+  not: EventTypeTypeNullableFilter
+}
+
+input SoulWinningSessionManyRelationFilter {
+  every: SoulWinningSessionWhereInput
+  some: SoulWinningSessionWhereInput
+  none: SoulWinningSessionWhereInput
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input EventOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  type: OrderDirection
+  scheduledStartTimeInUtc: OrderDirection
+  scheduledEndTimeInUtc: OrderDirection
+}
+
+input EventUpdateInput {
+  name: String
+  type: EventTypeType
+  organization: OrganizationRelateToOneForUpdateInput
+  soulWinningSessions: SoulWinningSessionRelateToManyForUpdateInput
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
+}
+
+input OrganizationRelateToOneForUpdateInput {
+  create: OrganizationCreateInput
+  connect: OrganizationWhereUniqueInput
+  disconnect: Boolean
+}
+
+input SoulWinningSessionRelateToManyForUpdateInput {
+  disconnect: [SoulWinningSessionWhereUniqueInput!]
+  set: [SoulWinningSessionWhereUniqueInput!]
+  create: [SoulWinningSessionCreateInput!]
+  connect: [SoulWinningSessionWhereUniqueInput!]
+}
+
+input EventUpdateArgs {
+  where: EventWhereUniqueInput!
+  data: EventUpdateInput!
+}
+
+input EventCreateInput {
+  name: String
+  type: EventTypeType
+  organization: OrganizationRelateToOneForCreateInput
+  soulWinningSessions: SoulWinningSessionRelateToManyForCreateInput
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
+}
+
+input OrganizationRelateToOneForCreateInput {
+  create: OrganizationCreateInput
+  connect: OrganizationWhereUniqueInput
+}
+
+input SoulWinningSessionRelateToManyForCreateInput {
+  create: [SoulWinningSessionCreateInput!]
+  connect: [SoulWinningSessionWhereUniqueInput!]
+}
+
+type SoulWinningSession {
+  id: ID!
+  name: String
+  event: Event
+  groups(where: SoulWinningSessionGroupWhereInput! = {}, orderBy: [SoulWinningSessionGroupOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SoulWinningSessionGroupWhereUniqueInput): [SoulWinningSessionGroup!]
+  groupsCount(where: SoulWinningSessionGroupWhereInput! = {}): Int
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
+}
+
+input SoulWinningSessionWhereUniqueInput {
+  id: ID
+}
+
+input SoulWinningSessionWhereInput {
+  AND: [SoulWinningSessionWhereInput!]
+  OR: [SoulWinningSessionWhereInput!]
+  NOT: [SoulWinningSessionWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  event: EventWhereInput
+  groups: SoulWinningSessionGroupManyRelationFilter
+  scheduledStartTimeInUtc: DateTimeFilter
+  scheduledEndTimeInUtc: DateTimeFilter
+}
+
+input SoulWinningSessionGroupManyRelationFilter {
+  every: SoulWinningSessionGroupWhereInput
+  some: SoulWinningSessionGroupWhereInput
+  none: SoulWinningSessionGroupWhereInput
+}
+
+input SoulWinningSessionOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  scheduledStartTimeInUtc: OrderDirection
+  scheduledEndTimeInUtc: OrderDirection
+}
+
+input SoulWinningSessionUpdateInput {
+  name: String
+  event: EventRelateToOneForUpdateInput
+  groups: SoulWinningSessionGroupRelateToManyForUpdateInput
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
+}
+
+input EventRelateToOneForUpdateInput {
+  create: EventCreateInput
+  connect: EventWhereUniqueInput
+  disconnect: Boolean
+}
+
+input SoulWinningSessionGroupRelateToManyForUpdateInput {
+  disconnect: [SoulWinningSessionGroupWhereUniqueInput!]
+  set: [SoulWinningSessionGroupWhereUniqueInput!]
+  create: [SoulWinningSessionGroupCreateInput!]
+  connect: [SoulWinningSessionGroupWhereUniqueInput!]
+}
+
+input SoulWinningSessionUpdateArgs {
+  where: SoulWinningSessionWhereUniqueInput!
+  data: SoulWinningSessionUpdateInput!
+}
+
+input SoulWinningSessionCreateInput {
+  name: String
+  event: EventRelateToOneForCreateInput
+  groups: SoulWinningSessionGroupRelateToManyForCreateInput
+  scheduledStartTimeInUtc: DateTime
+  scheduledEndTimeInUtc: DateTime
+}
+
+input EventRelateToOneForCreateInput {
+  create: EventCreateInput
+  connect: EventWhereUniqueInput
+}
+
+input SoulWinningSessionGroupRelateToManyForCreateInput {
+  create: [SoulWinningSessionGroupCreateInput!]
+  connect: [SoulWinningSessionGroupWhereUniqueInput!]
+}
+
+type SoulWinningSessionGroup {
+  id: ID!
+  session: SoulWinningSession
+  members(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  membersCount(where: UserWhereInput! = {}): Int
+  assignedMapArea: MapArea
+  encounters(where: EncounterWhereInput! = {}, orderBy: [EncounterOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EncounterWhereUniqueInput): [Encounter!]
+  encountersCount(where: EncounterWhereInput! = {}): Int
+}
+
+input SoulWinningSessionGroupWhereUniqueInput {
+  id: ID
+}
+
+input SoulWinningSessionGroupWhereInput {
+  AND: [SoulWinningSessionGroupWhereInput!]
+  OR: [SoulWinningSessionGroupWhereInput!]
+  NOT: [SoulWinningSessionGroupWhereInput!]
+  id: IDFilter
+  session: SoulWinningSessionWhereInput
+  members: UserManyRelationFilter
+  assignedMapArea: MapAreaWhereInput
+  encounters: EncounterManyRelationFilter
+}
+
+input EncounterManyRelationFilter {
+  every: EncounterWhereInput
+  some: EncounterWhereInput
+  none: EncounterWhereInput
+}
+
+input SoulWinningSessionGroupOrderByInput {
+  id: OrderDirection
+}
+
+input SoulWinningSessionGroupUpdateInput {
+  session: SoulWinningSessionRelateToOneForUpdateInput
+  members: UserRelateToManyForUpdateInput
+  assignedMapArea: MapAreaRelateToOneForUpdateInput
+  encounters: EncounterRelateToManyForUpdateInput
+}
+
+input SoulWinningSessionRelateToOneForUpdateInput {
+  create: SoulWinningSessionCreateInput
+  connect: SoulWinningSessionWhereUniqueInput
+  disconnect: Boolean
+}
+
+input MapAreaRelateToOneForUpdateInput {
+  create: MapAreaCreateInput
+  connect: MapAreaWhereUniqueInput
+  disconnect: Boolean
+}
+
+input EncounterRelateToManyForUpdateInput {
+  disconnect: [EncounterWhereUniqueInput!]
+  set: [EncounterWhereUniqueInput!]
+  create: [EncounterCreateInput!]
+  connect: [EncounterWhereUniqueInput!]
+}
+
+input SoulWinningSessionGroupUpdateArgs {
+  where: SoulWinningSessionGroupWhereUniqueInput!
+  data: SoulWinningSessionGroupUpdateInput!
+}
+
+input SoulWinningSessionGroupCreateInput {
+  session: SoulWinningSessionRelateToOneForCreateInput
+  members: UserRelateToManyForCreateInput
+  assignedMapArea: MapAreaRelateToOneForCreateInput
+  encounters: EncounterRelateToManyForCreateInput
+}
+
+input SoulWinningSessionRelateToOneForCreateInput {
+  create: SoulWinningSessionCreateInput
+  connect: SoulWinningSessionWhereUniqueInput
+}
+
+input MapAreaRelateToOneForCreateInput {
+  create: MapAreaCreateInput
+  connect: MapAreaWhereUniqueInput
+}
+
+input EncounterRelateToManyForCreateInput {
+  create: [EncounterCreateInput!]
+  connect: [EncounterWhereUniqueInput!]
+}
+
+type Encounter {
+  id: ID!
+  group: SoulWinningSessionGroup
+  houseAddress: String
+  encounterTimeInUtc: DateTime
+  salvations(where: SavedPersonWhereInput! = {}, orderBy: [SavedPersonOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SavedPersonWhereUniqueInput): [SavedPerson!]
+  salvationsCount(where: SavedPersonWhereInput! = {}): Int
+  result: EncounterResultType
+}
+
+enum EncounterResultType {
+  salvation
+  listened_to_entire_gospel
+  listened_to_few_verses
+  not_interested
+}
+
+input EncounterWhereUniqueInput {
+  id: ID
+}
+
+input EncounterWhereInput {
+  AND: [EncounterWhereInput!]
+  OR: [EncounterWhereInput!]
+  NOT: [EncounterWhereInput!]
+  id: IDFilter
+  group: SoulWinningSessionGroupWhereInput
+  houseAddress: StringFilter
+  encounterTimeInUtc: DateTimeNullableFilter
+  salvations: SavedPersonManyRelationFilter
+  result: EncounterResultTypeNullableFilter
+}
+
+input SavedPersonManyRelationFilter {
+  every: SavedPersonWhereInput
+  some: SavedPersonWhereInput
+  none: SavedPersonWhereInput
+}
+
+input EncounterResultTypeNullableFilter {
+  equals: EncounterResultType
+  in: [EncounterResultType!]
+  notIn: [EncounterResultType!]
+  not: EncounterResultTypeNullableFilter
+}
+
+input EncounterOrderByInput {
+  id: OrderDirection
+  houseAddress: OrderDirection
+  encounterTimeInUtc: OrderDirection
+  result: OrderDirection
+}
+
+input EncounterUpdateInput {
+  group: SoulWinningSessionGroupRelateToOneForUpdateInput
+  houseAddress: String
+  encounterTimeInUtc: DateTime
+  salvations: SavedPersonRelateToManyForUpdateInput
+  result: EncounterResultType
+}
+
+input SoulWinningSessionGroupRelateToOneForUpdateInput {
+  create: SoulWinningSessionGroupCreateInput
+  connect: SoulWinningSessionGroupWhereUniqueInput
+  disconnect: Boolean
+}
+
+input SavedPersonRelateToManyForUpdateInput {
+  disconnect: [SavedPersonWhereUniqueInput!]
+  set: [SavedPersonWhereUniqueInput!]
+  create: [SavedPersonCreateInput!]
+  connect: [SavedPersonWhereUniqueInput!]
+}
+
+input EncounterUpdateArgs {
+  where: EncounterWhereUniqueInput!
+  data: EncounterUpdateInput!
+}
+
+input EncounterCreateInput {
+  group: SoulWinningSessionGroupRelateToOneForCreateInput
+  houseAddress: String
+  encounterTimeInUtc: DateTime
+  salvations: SavedPersonRelateToManyForCreateInput
+  result: EncounterResultType
+}
+
+input SoulWinningSessionGroupRelateToOneForCreateInput {
+  create: SoulWinningSessionGroupCreateInput
+  connect: SoulWinningSessionGroupWhereUniqueInput
+}
+
+input SavedPersonRelateToManyForCreateInput {
+  create: [SavedPersonCreateInput!]
+  connect: [SavedPersonWhereUniqueInput!]
+}
+
+type SavedPerson {
+  id: ID!
+  name: String
+  email: String
+  phone: String
+  savingEncounter: Encounter
+}
+
+input SavedPersonWhereUniqueInput {
+  id: ID
+  email: String
+}
+
+input SavedPersonWhereInput {
+  AND: [SavedPersonWhereInput!]
+  OR: [SavedPersonWhereInput!]
+  NOT: [SavedPersonWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  email: StringFilter
+  phone: StringFilter
+  savingEncounter: EncounterWhereInput
+}
+
+input SavedPersonOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  email: OrderDirection
+  phone: OrderDirection
+}
+
+input SavedPersonUpdateInput {
+  name: String
+  email: String
+  phone: String
+  savingEncounter: EncounterRelateToOneForUpdateInput
+}
+
+input EncounterRelateToOneForUpdateInput {
+  create: EncounterCreateInput
+  connect: EncounterWhereUniqueInput
+  disconnect: Boolean
+}
+
+input SavedPersonUpdateArgs {
+  where: SavedPersonWhereUniqueInput!
+  data: SavedPersonUpdateInput!
+}
+
+input SavedPersonCreateInput {
+  name: String
+  email: String
+  phone: String
+  savingEncounter: EncounterRelateToOneForCreateInput
+}
+
+input EncounterRelateToOneForCreateInput {
+  create: EncounterCreateInput
+  connect: EncounterWhereUniqueInput
+}
+
+type Map {
+  id: ID!
+  name: String
+  belongingOrganization: Organization
+  areas(where: MapAreaWhereInput! = {}, orderBy: [MapAreaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MapAreaWhereUniqueInput): [MapArea!]
+  areasCount(where: MapAreaWhereInput! = {}): Int
+}
+
+input MapWhereUniqueInput {
+  id: ID
+}
+
+input MapWhereInput {
+  AND: [MapWhereInput!]
+  OR: [MapWhereInput!]
+  NOT: [MapWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  belongingOrganization: OrganizationWhereInput
+  areas: MapAreaManyRelationFilter
+}
+
+input MapAreaManyRelationFilter {
+  every: MapAreaWhereInput
+  some: MapAreaWhereInput
+  none: MapAreaWhereInput
+}
+
+input MapOrderByInput {
   id: OrderDirection
   name: OrderDirection
 }
 
-input OrganizationTypeUpdateInput {
+input MapUpdateInput {
   name: String
+  belongingOrganization: OrganizationRelateToOneForUpdateInput
+  areas: MapAreaRelateToManyForUpdateInput
 }
 
-input OrganizationTypeUpdateArgs {
-  where: OrganizationTypeWhereUniqueInput!
-  data: OrganizationTypeUpdateInput!
+input MapAreaRelateToManyForUpdateInput {
+  disconnect: [MapAreaWhereUniqueInput!]
+  set: [MapAreaWhereUniqueInput!]
+  create: [MapAreaCreateInput!]
+  connect: [MapAreaWhereUniqueInput!]
 }
 
-input OrganizationTypeCreateInput {
+input MapUpdateArgs {
+  where: MapWhereUniqueInput!
+  data: MapUpdateInput!
+}
+
+input MapCreateInput {
   name: String
+  belongingOrganization: OrganizationRelateToOneForCreateInput
+  areas: MapAreaRelateToManyForCreateInput
+}
+
+input MapAreaRelateToManyForCreateInput {
+  create: [MapAreaCreateInput!]
+  connect: [MapAreaWhereUniqueInput!]
+}
+
+type MapArea {
+  id: ID!
+  name: String
+  belongingMap: Map
+  polygonGeoJson: JSON
+}
+
+input MapAreaWhereUniqueInput {
+  id: ID
+}
+
+input MapAreaWhereInput {
+  AND: [MapAreaWhereInput!]
+  OR: [MapAreaWhereInput!]
+  NOT: [MapAreaWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  belongingMap: MapWhereInput
+}
+
+input MapAreaOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input MapAreaUpdateInput {
+  name: String
+  belongingMap: MapRelateToOneForUpdateInput
+  polygonGeoJson: JSON
+}
+
+input MapRelateToOneForUpdateInput {
+  create: MapCreateInput
+  connect: MapWhereUniqueInput
+  disconnect: Boolean
+}
+
+input MapAreaUpdateArgs {
+  where: MapAreaWhereUniqueInput!
+  data: MapAreaUpdateInput!
+}
+
+input MapAreaCreateInput {
+  name: String
+  belongingMap: MapRelateToOneForCreateInput
+  polygonGeoJson: JSON
+}
+
+input MapRelateToOneForCreateInput {
+  create: MapCreateInput
+  connect: MapWhereUniqueInput
 }
 
 """
@@ -285,14 +844,51 @@ type Mutation {
   updateOrganizations(data: [OrganizationUpdateArgs!]!): [Organization]
   deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
   deleteOrganizations(where: [OrganizationWhereUniqueInput!]!): [Organization]
-  createOrganizationType(data: OrganizationTypeCreateInput!): OrganizationType
-  createOrganizationTypes(data: [OrganizationTypeCreateInput!]!): [OrganizationType]
-  updateOrganizationType(where: OrganizationTypeWhereUniqueInput!, data: OrganizationTypeUpdateInput!): OrganizationType
-  updateOrganizationTypes(data: [OrganizationTypeUpdateArgs!]!): [OrganizationType]
-  deleteOrganizationType(where: OrganizationTypeWhereUniqueInput!): OrganizationType
-  deleteOrganizationTypes(where: [OrganizationTypeWhereUniqueInput!]!): [OrganizationType]
+  createEvent(data: EventCreateInput!): Event
+  createEvents(data: [EventCreateInput!]!): [Event]
+  updateEvent(where: EventWhereUniqueInput!, data: EventUpdateInput!): Event
+  updateEvents(data: [EventUpdateArgs!]!): [Event]
+  deleteEvent(where: EventWhereUniqueInput!): Event
+  deleteEvents(where: [EventWhereUniqueInput!]!): [Event]
+  createSoulWinningSession(data: SoulWinningSessionCreateInput!): SoulWinningSession
+  createSoulWinningSessions(data: [SoulWinningSessionCreateInput!]!): [SoulWinningSession]
+  updateSoulWinningSession(where: SoulWinningSessionWhereUniqueInput!, data: SoulWinningSessionUpdateInput!): SoulWinningSession
+  updateSoulWinningSessions(data: [SoulWinningSessionUpdateArgs!]!): [SoulWinningSession]
+  deleteSoulWinningSession(where: SoulWinningSessionWhereUniqueInput!): SoulWinningSession
+  deleteSoulWinningSessions(where: [SoulWinningSessionWhereUniqueInput!]!): [SoulWinningSession]
+  createSoulWinningSessionGroup(data: SoulWinningSessionGroupCreateInput!): SoulWinningSessionGroup
+  createSoulWinningSessionGroups(data: [SoulWinningSessionGroupCreateInput!]!): [SoulWinningSessionGroup]
+  updateSoulWinningSessionGroup(where: SoulWinningSessionGroupWhereUniqueInput!, data: SoulWinningSessionGroupUpdateInput!): SoulWinningSessionGroup
+  updateSoulWinningSessionGroups(data: [SoulWinningSessionGroupUpdateArgs!]!): [SoulWinningSessionGroup]
+  deleteSoulWinningSessionGroup(where: SoulWinningSessionGroupWhereUniqueInput!): SoulWinningSessionGroup
+  deleteSoulWinningSessionGroups(where: [SoulWinningSessionGroupWhereUniqueInput!]!): [SoulWinningSessionGroup]
+  createEncounter(data: EncounterCreateInput!): Encounter
+  createEncounters(data: [EncounterCreateInput!]!): [Encounter]
+  updateEncounter(where: EncounterWhereUniqueInput!, data: EncounterUpdateInput!): Encounter
+  updateEncounters(data: [EncounterUpdateArgs!]!): [Encounter]
+  deleteEncounter(where: EncounterWhereUniqueInput!): Encounter
+  deleteEncounters(where: [EncounterWhereUniqueInput!]!): [Encounter]
+  createSavedPerson(data: SavedPersonCreateInput!): SavedPerson
+  createSavedPeople(data: [SavedPersonCreateInput!]!): [SavedPerson]
+  updateSavedPerson(where: SavedPersonWhereUniqueInput!, data: SavedPersonUpdateInput!): SavedPerson
+  updateSavedPeople(data: [SavedPersonUpdateArgs!]!): [SavedPerson]
+  deleteSavedPerson(where: SavedPersonWhereUniqueInput!): SavedPerson
+  deleteSavedPeople(where: [SavedPersonWhereUniqueInput!]!): [SavedPerson]
+  createMap(data: MapCreateInput!): Map
+  createMaps(data: [MapCreateInput!]!): [Map]
+  updateMap(where: MapWhereUniqueInput!, data: MapUpdateInput!): Map
+  updateMaps(data: [MapUpdateArgs!]!): [Map]
+  deleteMap(where: MapWhereUniqueInput!): Map
+  deleteMaps(where: [MapWhereUniqueInput!]!): [Map]
+  createMapArea(data: MapAreaCreateInput!): MapArea
+  createMapAreas(data: [MapAreaCreateInput!]!): [MapArea]
+  updateMapArea(where: MapAreaWhereUniqueInput!, data: MapAreaUpdateInput!): MapArea
+  updateMapAreas(data: [MapAreaUpdateArgs!]!): [MapArea]
+  deleteMapArea(where: MapAreaWhereUniqueInput!): MapArea
+  deleteMapAreas(where: [MapAreaWhereUniqueInput!]!): [MapArea]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, adminUiPassword: String!): UserAuthenticationWithPasswordResult
+  createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
 }
 
 union UserAuthenticationWithPasswordResult = UserAuthenticationWithPasswordSuccess | UserAuthenticationWithPasswordFailure
@@ -306,6 +902,12 @@ type UserAuthenticationWithPasswordFailure {
   message: String!
 }
 
+input CreateInitialUserInput {
+  name: String
+  email: String
+  adminUiPassword: String
+}
+
 type Query {
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   user(where: UserWhereUniqueInput!): User
@@ -313,9 +915,27 @@ type Query {
   organizations(where: OrganizationWhereInput! = {}, orderBy: [OrganizationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrganizationWhereUniqueInput): [Organization!]
   organization(where: OrganizationWhereUniqueInput!): Organization
   organizationsCount(where: OrganizationWhereInput! = {}): Int
-  organizationTypes(where: OrganizationTypeWhereInput! = {}, orderBy: [OrganizationTypeOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrganizationTypeWhereUniqueInput): [OrganizationType!]
-  organizationType(where: OrganizationTypeWhereUniqueInput!): OrganizationType
-  organizationTypesCount(where: OrganizationTypeWhereInput! = {}): Int
+  events(where: EventWhereInput! = {}, orderBy: [EventOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventWhereUniqueInput): [Event!]
+  event(where: EventWhereUniqueInput!): Event
+  eventsCount(where: EventWhereInput! = {}): Int
+  soulWinningSessions(where: SoulWinningSessionWhereInput! = {}, orderBy: [SoulWinningSessionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SoulWinningSessionWhereUniqueInput): [SoulWinningSession!]
+  soulWinningSession(where: SoulWinningSessionWhereUniqueInput!): SoulWinningSession
+  soulWinningSessionsCount(where: SoulWinningSessionWhereInput! = {}): Int
+  soulWinningSessionGroups(where: SoulWinningSessionGroupWhereInput! = {}, orderBy: [SoulWinningSessionGroupOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SoulWinningSessionGroupWhereUniqueInput): [SoulWinningSessionGroup!]
+  soulWinningSessionGroup(where: SoulWinningSessionGroupWhereUniqueInput!): SoulWinningSessionGroup
+  soulWinningSessionGroupsCount(where: SoulWinningSessionGroupWhereInput! = {}): Int
+  encounters(where: EncounterWhereInput! = {}, orderBy: [EncounterOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EncounterWhereUniqueInput): [Encounter!]
+  encounter(where: EncounterWhereUniqueInput!): Encounter
+  encountersCount(where: EncounterWhereInput! = {}): Int
+  savedPeople(where: SavedPersonWhereInput! = {}, orderBy: [SavedPersonOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SavedPersonWhereUniqueInput): [SavedPerson!]
+  savedPerson(where: SavedPersonWhereUniqueInput!): SavedPerson
+  savedPeopleCount(where: SavedPersonWhereInput! = {}): Int
+  maps(where: MapWhereInput! = {}, orderBy: [MapOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MapWhereUniqueInput): [Map!]
+  map(where: MapWhereUniqueInput!): Map
+  mapsCount(where: MapWhereInput! = {}): Int
+  mapAreas(where: MapAreaWhereInput! = {}, orderBy: [MapAreaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: MapAreaWhereUniqueInput): [MapArea!]
+  mapArea(where: MapAreaWhereUniqueInput!): MapArea
+  mapAreasCount(where: MapAreaWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
