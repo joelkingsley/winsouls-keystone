@@ -36,6 +36,9 @@ model Event {
   id                      String               @id @default(cuid())
   name                    String               @default("")
   type                    EventTypeType        @default(marathon)
+  coverPhotoUrl           String               @default("")
+  whatToExpect            String               @default("")
+  eventPlan               String               @default("")
   organization            Organization?        @relation("Event_organization", fields: [organizationId], references: [id])
   organizationId          String?              @map("organization")
   soulWinningSessions     SoulWinningSession[] @relation("SoulWinningSession_event")
@@ -59,6 +62,7 @@ model SoulWinningSession {
 
 model SoulWinningSessionGroup {
   id                String              @id @default(cuid())
+  name              String              @default("")
   session           SoulWinningSession? @relation("SoulWinningSessionGroup_session", fields: [sessionId], references: [id])
   sessionId         String?             @map("session")
   members           User[]              @relation("SoulWinningSessionGroup_members")

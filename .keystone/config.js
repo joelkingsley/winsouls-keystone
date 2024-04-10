@@ -111,6 +111,9 @@ var eventConfig = (0, import_core3.list)({
       validation: { isRequired: true },
       ui: { displayMode: "select" }
     }),
+    coverPhotoUrl: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    whatToExpect: (0, import_fields3.text)({ validation: { isRequired: true } }),
+    eventPlan: (0, import_fields3.text)({ validation: { isRequired: true } }),
     organization: (0, import_fields3.relationship)({
       ref: "Organization.eventsByOrganization",
       many: false
@@ -160,6 +163,9 @@ var import_fields5 = require("@keystone-6/core/fields");
 var soulWinningSessionGroupConfig = (0, import_core5.list)({
   access: import_access5.allowAll,
   fields: {
+    name: (0, import_fields5.text)({
+      validation: { isRequired: true }
+    }),
     session: (0, import_fields5.relationship)({
       ref: "SoulWinningSession.groups",
       many: false

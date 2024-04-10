@@ -275,6 +275,9 @@ type Event {
   id: ID!
   name: String
   type: EventTypeType
+  coverPhotoUrl: String
+  whatToExpect: String
+  eventPlan: String
   organization: Organization
   soulWinningSessions(where: SoulWinningSessionWhereInput! = {}, orderBy: [SoulWinningSessionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SoulWinningSessionWhereUniqueInput): [SoulWinningSession!]
   soulWinningSessionsCount(where: SoulWinningSessionWhereInput! = {}): Int
@@ -298,6 +301,9 @@ input EventWhereInput {
   id: IDFilter
   name: StringFilter
   type: EventTypeTypeNullableFilter
+  coverPhotoUrl: StringFilter
+  whatToExpect: StringFilter
+  eventPlan: StringFilter
   organization: OrganizationWhereInput
   soulWinningSessions: SoulWinningSessionManyRelationFilter
   scheduledStartTimeInUtc: DateTimeFilter
@@ -332,6 +338,9 @@ input EventOrderByInput {
   id: OrderDirection
   name: OrderDirection
   type: OrderDirection
+  coverPhotoUrl: OrderDirection
+  whatToExpect: OrderDirection
+  eventPlan: OrderDirection
   scheduledStartTimeInUtc: OrderDirection
   scheduledEndTimeInUtc: OrderDirection
 }
@@ -339,6 +348,9 @@ input EventOrderByInput {
 input EventUpdateInput {
   name: String
   type: EventTypeType
+  coverPhotoUrl: String
+  whatToExpect: String
+  eventPlan: String
   organization: OrganizationRelateToOneForUpdateInput
   soulWinningSessions: SoulWinningSessionRelateToManyForUpdateInput
   scheduledStartTimeInUtc: DateTime
@@ -366,6 +378,9 @@ input EventUpdateArgs {
 input EventCreateInput {
   name: String
   type: EventTypeType
+  coverPhotoUrl: String
+  whatToExpect: String
+  eventPlan: String
   organization: OrganizationRelateToOneForCreateInput
   soulWinningSessions: SoulWinningSessionRelateToManyForCreateInput
   scheduledStartTimeInUtc: DateTime
@@ -467,6 +482,7 @@ input SoulWinningSessionGroupRelateToManyForCreateInput {
 
 type SoulWinningSessionGroup {
   id: ID!
+  name: String
   session: SoulWinningSession
   members(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   membersCount(where: UserWhereInput! = {}): Int
@@ -484,6 +500,7 @@ input SoulWinningSessionGroupWhereInput {
   OR: [SoulWinningSessionGroupWhereInput!]
   NOT: [SoulWinningSessionGroupWhereInput!]
   id: IDFilter
+  name: StringFilter
   session: SoulWinningSessionWhereInput
   members: UserManyRelationFilter
   assignedMapArea: MapAreaWhereInput
@@ -498,9 +515,11 @@ input EncounterManyRelationFilter {
 
 input SoulWinningSessionGroupOrderByInput {
   id: OrderDirection
+  name: OrderDirection
 }
 
 input SoulWinningSessionGroupUpdateInput {
+  name: String
   session: SoulWinningSessionRelateToOneForUpdateInput
   members: UserRelateToManyForUpdateInput
   assignedMapArea: MapAreaRelateToOneForUpdateInput
@@ -532,6 +551,7 @@ input SoulWinningSessionGroupUpdateArgs {
 }
 
 input SoulWinningSessionGroupCreateInput {
+  name: String
   session: SoulWinningSessionRelateToOneForCreateInput
   members: UserRelateToManyForCreateInput
   assignedMapArea: MapAreaRelateToOneForCreateInput

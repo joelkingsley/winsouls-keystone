@@ -3,7 +3,7 @@ import type { Lists } from '.keystone/types';
 import { allowAll } from "@keystone-6/core/access";
 import { password, relationship, text, timestamp } from "@keystone-6/core/fields";
 
-export let savedPersonConfig = list({
+export let savedPersonConfig: ListConfig<Lists.SavedPerson.TypeInfo<any>, any> = list({
   access: allowAll,
   fields: {
     name: text({ validation: { isRequired: true } }),
